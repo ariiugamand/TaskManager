@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>События — Manager Dashboard</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo"><div class="logo-icon">🏢</div><span>Manager</span></div>
+    </div>
+    <div class="sidebar-user">
+      <div class="sidebar-user-name">Загрузка...</div>
+      <div class="sidebar-user-role">Руководитель</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group">
+        <div class="nav-group-title">Основное</div>
+        <a href="pages/dashboard.html" class="nav-link"><span class="nav-icon">👥</span> Сотрудники</a>
+        <a href="pages/schedule.html" class="nav-link"><span class="nav-icon">📅</span> График</a>
+        <a href="pages/events.html" class="nav-link"><span class="nav-icon">📌</span> События</a>
+        <a href="pages/tasks.html" class="nav-link"><span class="nav-icon">✅</span> Задачи</a>
+        <a href="pages/applications.html" class="nav-link"><span class="nav-icon">📋</span> Заявления</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-logout"><span>🚪</span> Выйти</button>
+    </div>
+  </aside>
+  <div class="sidebar-backdrop"></div>
+
+  <div class="main-content">
+    <header class="topbar">
+      <button class="sidebar-toggle">☰</button>
+      <div class="topbar-title">События</div>
+      <div class="topbar-actions">
+        <div class="month-nav">
+          <input type="month" id="month-picker">
+        </div>
+        <button class="btn btn-primary btn-sm" id="btn-new-event">+ Событие</button>
+      </div>
+    </header>
+
+    <div class="page-content">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="tab-list">Список</button>
+        <button class="tab-btn" data-tab="tab-calendar">Календарь</button>
+      </div>
+
+      <div id="tab-list" class="tab-content active">
+        <div class="card">
+          <div class="card-body" style="padding:0">
+            <div id="events-list">
+              <div class="loading"><div class="spinner"></div><span>Загрузка...</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-calendar" class="tab-content">
+        <div class="card">
+          <div class="card-body">
+            <div id="calendar-container"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <div class="card-header"><div class="card-title" id="cal-selected-date">Выберите дату</div></div>
+          <div class="card-body" style="padding:0">
+            <div id="calendar-day-events">
+              <div style="padding:24px;text-align:center;color:var(--text-muted)">Выберите день на календаре</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Event Form Modal -->
+<div class="modal-overlay" id="event-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="event-modal-title">Новое событие</div>
+      <button class="modal-close" data-close-modal>✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert" id="event-alert"></div>
+      <input type="hidden" id="event-id">
+      <div class="form-group">
+        <label class="form-label">Название <span class="required">*</span></label>
+        <input type="text" class="form-control" id="event-name" placeholder="Название события">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group">
+          <label class="form-label">Дата <span class="required">*</span></label>
+          <input type="date" class="form-control" id="event-date">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Время</label>
+          <input type="time" class="form-control" id="event-time">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group">
+          <label class="form-label">Тип</label>
+          <select class="form-control" id="event-type">
+            <option value="meeting">Совещание</option>
+            <option value="review">Ревью</option>
+            <option value="training">Обучение</option>
+            <option value="other">Другое</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Важность</label>
+          <select class="form-control" id="event-importance">
+            <option value="high">Высокая</option>
+            <option value="normal">Обычная</option>
+            <option value="low">Низкая</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Описание</label>
+        <textarea class="form-control" id="event-description" placeholder="Описание события"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close-modal>Отмена</button>
+      <button class="btn btn-primary" id="btn-save-event">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Event Detail Modal -->
+<div class="modal-overlay" id="event-detail-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="detail-event-name">—</div>
+      <button class="modal-close" data-close-modal>✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-grid">
+        <div class="detail-row">
+          <div class="detail-label">Дата</div>
+          <div class="detail-value" id="detail-event-date">—</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Время</div>
+          <div class="detail-value" id="detail-event-time">—</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Тип</div>
+          <div class="detail-value" id="detail-event-type">—</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Важность</div>
+          <div class="detail-value" id="detail-event-importance">—</div>
+        </div>
+        <div class="detail-row" style="grid-column:1/-1">
+          <div class="detail-label">Описание</div>
+          <div class="detail-value" id="detail-event-desc">—</div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px">
+        <div class="detail-label" style="margin-bottom:8px">УВЕДОМЛЕНИЯ</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <select class="form-control" id="notify-mode" style="width:auto">
+            <option value="all">Всем сотрудникам отдела</option>
+            <option value="select">Выбрать сотрудников</option>
+          </select>
+          <button class="btn btn-warning btn-sm" id="btn-notify">🔔 Отправить уведомление</button>
+        </div>
+        <div id="notify-select-wrap" style="display:none;margin-top:10px">
+          <div class="checkbox-group" id="notify-employees"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close-modal>Закрыть</button>
+      <button class="btn btn-ghost btn-sm" id="btn-edit-event">✏️ Редактировать</button>
+      <button class="btn btn-danger btn-sm" id="btn-delete-event">🗑 Удалить</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/auth.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/ui.js"></script>
+<script src="../js/pages/events.js"></script>
+</body>
+</html>

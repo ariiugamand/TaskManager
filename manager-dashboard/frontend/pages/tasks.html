@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Задачи — Manager Dashboard</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo"><div class="logo-icon">🏢</div><span>Manager</span></div>
+    </div>
+    <div class="sidebar-user">
+      <div class="sidebar-user-name">Загрузка...</div>
+      <div class="sidebar-user-role">Руководитель</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group">
+        <div class="nav-group-title">Основное</div>
+        <a href="pages/dashboard.html" class="nav-link"><span class="nav-icon">👥</span> Сотрудники</a>
+        <a href="pages/schedule.html" class="nav-link"><span class="nav-icon">📅</span> График</a>
+        <a href="pages/events.html" class="nav-link"><span class="nav-icon">📌</span> События</a>
+        <a href="pages/tasks.html" class="nav-link"><span class="nav-icon">✅</span> Задачи</a>
+        <a href="pages/applications.html" class="nav-link"><span class="nav-icon">📋</span> Заявления</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-logout"><span>🚪</span> Выйти</button>
+    </div>
+  </aside>
+  <div class="sidebar-backdrop"></div>
+
+  <div class="main-content">
+    <header class="topbar">
+      <button class="sidebar-toggle">☰</button>
+      <div class="topbar-title">Задачи и планы</div>
+      <div class="topbar-actions">
+        <div class="month-nav">
+          <input type="month" id="month-picker">
+        </div>
+        <button class="btn btn-primary btn-sm" id="btn-new-task">+ Задача</button>
+      </div>
+    </header>
+
+    <div class="page-content">
+      <!-- Stats row -->
+      <div class="stats-grid" id="task-stats" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-card"><div class="stat-icon blue">📋</div><div><div class="stat-value" id="ts-total">—</div><div class="stat-label">Всего</div></div></div>
+        <div class="stat-card"><div class="stat-icon yellow">⏳</div><div><div class="stat-value" id="ts-inprogress">—</div><div class="stat-label">В работе</div></div></div>
+        <div class="stat-card"><div class="stat-icon green">✅</div><div><div class="stat-value" id="ts-done">—</div><div class="stat-label">Готово</div></div></div>
+        <div class="stat-card"><div class="stat-icon red">⚠️</div><div><div class="stat-value" id="ts-overdue">—</div><div class="stat-label">Просрочено</div></div></div>
+      </div>
+
+      <div class="card">
+        <div class="filters-row">
+          <div class="filter-group">
+            <span class="filter-label">Статус:</span>
+            <select class="filter-select" id="filter-status">
+              <option value="">Все</option>
+              <option value="new">Новые</option>
+              <option value="in_progress">В работе</option>
+              <option value="done">Готово</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="tasks-container">
+            <div class="loading"><div class="spinner"></div><span>Загрузка...</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Task Form Modal -->
+<div class="modal-overlay" id="task-modal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title" id="task-modal-title">Новая задача</div>
+      <button class="modal-close" data-close-modal>✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert" id="task-alert"></div>
+      <input type="hidden" id="task-id">
+      <div class="form-group">
+        <label class="form-label">Название <span class="required">*</span></label>
+        <input type="text" class="form-control" id="task-name" placeholder="Название задачи">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group">
+          <label class="form-label">Тип задачи</label>
+          <select class="form-control" id="task-type"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Статус</label>
+          <select class="form-control" id="task-status">
+            <option value="new">Новая</option>
+            <option value="in_progress">В работе</option>
+            <option value="done">Готово</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group">
+          <label class="form-label">Дедлайн</label>
+          <input type="date" class="form-control" id="task-deadline">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Выполнено %</label>
+          <input type="number" class="form-control" id="task-percent" min="0" max="100" value="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Описание</label>
+        <textarea class="form-control" id="task-description" placeholder="Описание задачи"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Исполнители</label>
+        <div class="checkbox-group" id="task-assignees"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close-modal>Отмена</button>
+      <button class="btn btn-primary" id="btn-save-task">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Task Detail Modal -->
+<div class="modal-overlay" id="task-detail-modal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title" id="td-name">—</div>
+      <button class="modal-close" data-close-modal>✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-grid">
+        <div class="detail-row">
+          <div class="detail-label">Статус</div>
+          <div class="detail-value" id="td-status">—</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Тип</div>
+          <div class="detail-value" id="td-type">—</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Дедлайн</div>
+          <div class="detail-value" id="td-deadline">—</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Осталось</div>
+          <div class="detail-value" id="td-remaining">—</div>
+        </div>
+        <div class="detail-row" style="grid-column:1/-1">
+          <div class="detail-label">Прогресс</div>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+            <div class="progress-bar" style="flex:1;height:10px">
+              <div class="progress-fill" id="td-progress" style="width:0%"></div>
+            </div>
+            <span id="td-percent" style="font-weight:700;font-size:14px">0%</span>
+          </div>
+        </div>
+        <div class="detail-row" style="grid-column:1/-1">
+          <div class="detail-label">Описание</div>
+          <div class="detail-value" id="td-desc">—</div>
+        </div>
+        <div class="detail-row" style="grid-column:1/-1">
+          <div class="detail-label">Исполнители</div>
+          <div class="detail-value" id="td-assignees">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close-modal>Закрыть</button>
+      <button class="btn btn-ghost btn-sm" id="btn-edit-task">✏️ Редактировать</button>
+      <button class="btn btn-danger btn-sm" id="btn-delete-task">🗑 Удалить</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/auth.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/ui.js"></script>
+<script src="../js/pages/tasks.js"></script>
+</body>
+</html>

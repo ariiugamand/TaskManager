@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>График — Manager Dashboard</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo"><div class="logo-icon">🏢</div><span>Manager</span></div>
+    </div>
+    <div class="sidebar-user">
+      <div class="sidebar-user-name">Загрузка...</div>
+      <div class="sidebar-user-role">Руководитель</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group">
+        <div class="nav-group-title">Основное</div>
+        <a href="pages/dashboard.html" class="nav-link"><span class="nav-icon">👥</span> Сотрудники</a>
+        <a href="pages/schedule.html" class="nav-link"><span class="nav-icon">📅</span> График</a>
+        <a href="pages/events.html" class="nav-link"><span class="nav-icon">📌</span> События</a>
+        <a href="pages/tasks.html" class="nav-link"><span class="nav-icon">✅</span> Задачи</a>
+        <a href="pages/applications.html" class="nav-link"><span class="nav-icon">📋</span> Заявления</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-logout"><span>🚪</span> Выйти</button>
+    </div>
+  </aside>
+  <div class="sidebar-backdrop"></div>
+
+  <div class="main-content">
+    <header class="topbar">
+      <button class="sidebar-toggle">☰</button>
+      <div class="topbar-title">График работы</div>
+      <div class="topbar-actions">
+        <div class="month-nav">
+          <input type="month" id="month-picker">
+        </div>
+        <button class="btn btn-primary btn-sm" id="btn-save-all">💾 Сохранить все</button>
+      </div>
+    </header>
+
+    <div class="page-content">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="tab-view">Просмотр графика</button>
+        <button class="tab-btn" data-tab="tab-edit">Составить график</button>
+        <button class="tab-btn" data-tab="tab-wishes">Пожелания сотрудников</button>
+      </div>
+
+      <div id="tab-view" class="tab-content active">
+        <div class="card">
+          <div class="card-body" style="padding:0">
+            <div id="schedule-view-container">
+              <div class="loading"><div class="spinner"></div><span>Загрузка...</span></div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:16px">
+          <button class="btn btn-warning btn-sm" id="btn-change-request">📝 Заявка на изменение смены</button>
+        </div>
+      </div>
+
+      <div id="tab-edit" class="tab-content">
+        <div class="alert alert-info show" style="margin-bottom:16px">
+          💡 Кликните на ячейку для установки/изменения времени смены. Пожелания сотрудников отмечены красным.
+        </div>
+        <div class="card">
+          <div class="card-body" style="padding:0">
+            <div id="schedule-edit-container">
+              <div class="loading"><div class="spinner"></div><span>Загрузка...</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-wishes" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Пожелания по графику</div>
+            <button class="btn btn-primary btn-sm" id="btn-add-wish">+ Добавить пожелание</button>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div id="wishes-container">
+              <div class="loading"><div class="spinner"></div><span>Загрузка...</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Shift Edit Modal -->
+<div class="modal-overlay" id="shift-modal">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <div class="modal-title" id="shift-modal-title">Редактировать смену</div>
+      <button class="modal-close" data-close-modal>✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert" id="shift-alert"></div>
+      <div id="shift-info" style="font-size:13px;color:var(--text-muted);margin-bottom:16px"></div>
+      <div class="form-group">
+        <label class="form-label">Начало смены</label>
+        <input type="time" class="form-control" id="shift-start">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Конец смены</label>
+        <input type="time" class="form-control" id="shift-end">
+      </div>
+      <input type="hidden" id="shift-emp-id">
+      <input type="hidden" id="shift-date">
+      <input type="hidden" id="shift-id">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close-modal>Отмена</button>
+      <button class="btn btn-danger btn-sm" id="btn-delete-shift">Удалить</button>
+      <button class="btn btn-primary" id="btn-save-shift">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Change Request Modal -->
+<div class="modal-overlay" id="change-request-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Заявка на изменение смены</div>
+      <button class="modal-close" data-close-modal>✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert" id="cr-alert"></div>
+      <div class="form-group">
+        <label class="form-label">ID смены</label>
+        <input type="number" class="form-control" id="cr-schedule-id" placeholder="Введите ID смены">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Тип запроса</label>
+        <select class="form-control" id="cr-type">
+          <option value="cancel">Отмена</option>
+          <option value="transfer">Перенос</option>
+          <option value="shorten">Сокращение</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Причина</label>
+        <textarea class="form-control" id="cr-reason" placeholder="Укажите причину"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">ID замещающего сотрудника (необязательно)</label>
+        <input type="number" class="form-control" id="cr-replacement" placeholder="ID сотрудника">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close-modal>Отмена</button>
+      <button class="btn btn-primary" id="btn-submit-cr">Отправить заявку</button>
+    </div>
+  </div>
+</div>
+
+<!-- Wish Modal -->
+<div class="modal-overlay" id="wish-modal">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <div class="modal-title">Пожелание по графику</div>
+      <button class="modal-close" data-close-modal>✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert" id="wish-alert"></div>
+      <div class="form-group">
+        <label class="form-label">Сотрудник</label>
+        <select class="form-control" id="wish-emp"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Дата</label>
+        <input type="date" class="form-control" id="wish-date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Желаемое начало</label>
+        <input type="time" class="form-control" id="wish-start">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Желаемый конец</label>
+        <input type="time" class="form-control" id="wish-end">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Примечание</label>
+        <input type="text" class="form-control" id="wish-note" placeholder="Необязательно">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close-modal>Отмена</button>
+      <button class="btn btn-primary" id="btn-save-wish">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/auth.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/ui.js"></script>
+<script src="../js/pages/schedule.js"></script>
+</body>
+</html>

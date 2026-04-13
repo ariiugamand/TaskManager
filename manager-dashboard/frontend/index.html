@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Manager Dashboard</title>
+  <script>
+    // Redirect based on auth state
+    const token = localStorage.getItem('mgr_token');
+    if (token) {
+      window.location.href = 'pages/dashboard.html';
+    } else {
+      window.location.href = 'pages/login.html';
+    }
+  </script>
+</head>
+<body></body>
+</html>

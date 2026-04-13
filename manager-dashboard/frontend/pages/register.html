@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Регистрация — Manager Dashboard</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+</head>
+<body class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <h1>🏢 Manager Dashboard</h1>
+      <p>Система управления отделом</p>
+    </div>
+
+    <h2 class="auth-title">Регистрация руководителя</h2>
+
+    <div class="alert" id="alert-msg"></div>
+
+    <form id="register-form" novalidate>
+      <div class="form-group">
+        <label class="form-label">Логин <span class="required">*</span></label>
+        <input type="text" class="form-control" id="login" placeholder="Минимум 3 символа" autocomplete="username">
+        <div class="form-error" id="err-login"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email <span class="required">*</span></label>
+        <input type="email" class="form-control" id="email" placeholder="example@company.com" autocomplete="email">
+        <div class="form-error" id="err-email"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Контакты (телефон)</label>
+        <input type="text" class="form-control" id="contacts" placeholder="+7-900-000-0000">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Пароль <span class="required">*</span></label>
+        <div class="input-password-wrap">
+          <input type="password" class="form-control" id="password" placeholder="Минимум 6 символов" autocomplete="new-password">
+          <button type="button" class="password-toggle" id="toggle-password">👁</button>
+        </div>
+        <div class="form-error" id="err-password"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Подтверждение пароля <span class="required">*</span></label>
+        <div class="input-password-wrap">
+          <input type="password" class="form-control" id="password2" placeholder="Повторите пароль" autocomplete="new-password">
+          <button type="button" class="password-toggle" id="toggle-password2">👁</button>
+        </div>
+        <div class="form-error" id="err-password2"></div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg" id="btn-register">Зарегистрироваться</button>
+    </form>
+
+    <div class="auth-links">
+      Уже есть аккаунт? <a href="pages/login.html">Войти</a>
+    </div>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/ui.js"></script>
+  <script src="../js/pages/register.js"></script>
+</body>
+</html>

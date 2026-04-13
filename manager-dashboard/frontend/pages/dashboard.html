@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Сотрудники — Manager Dashboard</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="logo-icon">🏢</div>
+        <span>Manager</span>
+      </div>
+    </div>
+    <div class="sidebar-user">
+      <div class="sidebar-user-name">Загрузка...</div>
+      <div class="sidebar-user-role">Руководитель</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group">
+        <div class="nav-group-title">Основное</div>
+        <a href="pages/dashboard.html" class="nav-link"><span class="nav-icon">👥</span> Сотрудники</a>
+        <a href="pages/schedule.html" class="nav-link"><span class="nav-icon">📅</span> График</a>
+        <a href="pages/events.html" class="nav-link"><span class="nav-icon">📌</span> События</a>
+        <a href="pages/tasks.html" class="nav-link"><span class="nav-icon">✅</span> Задачи</a>
+        <a href="pages/applications.html" class="nav-link"><span class="nav-icon">📋</span> Заявления</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-logout"><span>🚪</span> Выйти</button>
+    </div>
+  </aside>
+  <div class="sidebar-backdrop"></div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <header class="topbar">
+      <button class="sidebar-toggle">☰</button>
+      <div class="topbar-title">Сотрудники отдела</div>
+      <div class="topbar-actions">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" id="search-input" placeholder="Поиск по имени...">
+        </div>
+      </div>
+    </header>
+
+    <div class="page-content">
+      <!-- Stats -->
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon blue">👥</div>
+          <div><div class="stat-value" id="stat-total">—</div><div class="stat-label">Всего сотрудников</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">✅</div>
+          <div><div class="stat-value" id="stat-tasks">—</div><div class="stat-label">Активных задач</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon yellow">📋</div>
+          <div><div class="stat-value" id="stat-apps">—</div><div class="stat-label">Заявлений на рассмотрении</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red">📌</div>
+          <div><div class="stat-value" id="stat-events">—</div><div class="stat-label">Событий на этой неделе</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Список сотрудников</div>
+        </div>
+        <div class="card-body">
+          <div class="employee-grid" id="employee-grid">
+            <div class="loading"><div class="spinner"></div><span>Загрузка...</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Employee Modal -->
+<div class="modal-overlay" id="employee-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Информация о сотруднике</div>
+      <button class="modal-close" data-close-modal>✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+        <div class="employee-avatar" id="modal-avatar" style="width:64px;height:64px;font-size:24px">?</div>
+        <div>
+          <div style="font-size:18px;font-weight:700" id="modal-name">—</div>
+          <div style="font-size:13px;color:var(--text-muted)" id="modal-position">—</div>
+        </div>
+      </div>
+      <div class="detail-grid">
+        <div class="detail-row">
+          <div class="detail-label">Отдел</div>
+          <div class="detail-value" id="modal-dept">—</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Роль</div>
+          <div class="detail-value" id="modal-role">—</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Контакты</div>
+          <div class="detail-value" id="modal-contacts">—</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Дата рождения</div>
+          <div class="detail-value" id="modal-birth">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close-modal>Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/auth.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/ui.js"></script>
+<script src="../js/pages/dashboard.js"></script>
+</body>
+</html>

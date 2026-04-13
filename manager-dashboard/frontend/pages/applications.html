@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Заявления — Manager Dashboard</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo"><div class="logo-icon">🏢</div><span>Manager</span></div>
+    </div>
+    <div class="sidebar-user">
+      <div class="sidebar-user-name">Загрузка...</div>
+      <div class="sidebar-user-role">Руководитель</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group">
+        <div class="nav-group-title">Основное</div>
+        <a href="/pages/dashboard.html" class="nav-link"><span class="nav-icon">👥</span> Сотрудники</a>
+        <a href="/pages/schedule.html" class="nav-link"><span class="nav-icon">📅</span> График</a>
+        <a href="/pages/events.html" class="nav-link"><span class="nav-icon">📌</span> События</a>
+        <a href="/pages/tasks.html" class="nav-link"><span class="nav-icon">✅</span> Задачи</a>
+        <a href="/pages/applications.html" class="nav-link"><span class="nav-icon">📋</span> Заявления</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-logout"><span>🚪</span> Выйти</button>
+    </div>
+  </aside>
+  <div class="sidebar-backdrop"></div>
+
+  <div class="main-content">
+    <header class="topbar">
+      <button class="sidebar-toggle">☰</button>
+      <div class="topbar-title">Заявления</div>
+    </header>
+
+    <div class="page-content">
+      <div class="card">
+        <div class="filters-row">
+          <div class="filter-group">
+            <span class="filter-label">Статус:</span>
+            <select class="filter-select" id="filter-status">
+              <option value="">Все</option>
+              <option value="pending">На рассмотрении</option>
+              <option value="approved">Одобрено</option>
+              <option value="rejected">Отклонено</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Тип:</span>
+            <select class="filter-select" id="filter-type"></select>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">С:</span>
+            <input type="date" class="filter-select" id="filter-date-from">
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">По:</span>
+            <input type="date" class="filter-select" id="filter-date-to">
+          </div>
+          <button class="btn btn-secondary btn-sm" id="btn-clear-filters">Сбросить</button>
+        </div>
+
+        <div class="table-wrapper">
+          <table id="apps-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Название</th>
+                <th>Тип</th>
+                <th>Сотрудник</th>
+                <th>Дата подачи</th>
+                <th>Статус</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody id="apps-tbody">
+              <tr><td colspan="7" class="loading"><div class="spinner"></div> Загрузка...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Application Detail Modal -->
+<div class="modal-overlay" id="app-detail-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="ad-name">—</div>
+      <button class="modal-close" data-close-modal>✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-grid">
+        <div class="detail-row">
+          <div class="detail-label">Тип</div>
+          <div class="detail-value" id="ad-type">—</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Статус</div>
+          <div class="detail-value" id="ad-status">—</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Сотрудник</div>
+          <div class="detail-value" id="ad-employee">—</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Дата подачи</div>
+          <div class="detail-value" id="ad-date">—</div>
+        </div>
+        <div class="detail-row" style="grid-column:1/-1">
+          <div class="detail-label">Описание</div>
+          <div class="detail-value" id="ad-desc">—</div>
+        </div>
+        <div class="detail-row" style="grid-column:1/-1" id="ad-reviewer-row">
+          <div class="detail-label">Обработал</div>
+          <div class="detail-value" id="ad-reviewer">—</div>
+        </div>
+        <div class="detail-row" style="grid-column:1/-1" id="ad-result-row">
+          <div class="detail-label">Результат рассмотрения</div>
+          <div class="detail-value" id="ad-result">—</div>
+        </div>
+      </div>
+
+      <!-- Review form (shown for pending) -->
+      <div id="review-form" style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
+        <div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text)">Обработать заявление</div>
+        <div class="alert" id="review-alert"></div>
+        <input type="hidden" id="review-app-id">
+        <div class="form-group">
+          <label class="form-label">Решение</label>
+          <select class="form-control" id="review-status">
+            <option value="approved">Одобрить</option>
+            <option value="rejected">Отклонить</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Комментарий / результат</label>
+          <textarea class="form-control" id="review-result" placeholder="Укажите результат рассмотрения"></textarea>
+        </div>
+        <button class="btn btn-primary" id="btn-submit-review">Сохранить решение</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close-modal>Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/auth.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/ui.js"></script>
+<script src="../js/pages/applications.js"></script>
+</body>
+</html>
